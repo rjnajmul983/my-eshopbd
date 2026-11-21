@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আমার অ্যাকাউন্ট — E-ShopBD</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="site-header-mount"></div>
+  <main class="container" style="max-width:860px;margin-top:22px">
+    <div id="acc-root">লোড হচ্ছে...</div>
+  </main>
+  <div id="site-footer-mount"></div>
+  <script src="/api.js"></script>
+  <script>
+    async function renderAccount() {
+      await EShop.mountLayout();
+      const root = document.getElementById('acc-root');
+      const token = localStorage.getItem('eshopbd_user_token');
+
+      if (token) {
+        const res = await EShop.api('/account/me');
+        if (res.ok) {
+          const u = res.user;
+          root.innerHTML = `
+            <div class="pdp-grid">
+              <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <h2>👤 ${u.name}</h2>
+                  <button class="btn btn-outline btn-sm" onclick="localStorage.removeItem('eshopbd_user_token');location.reload()">লগআউট</button>
+                </div>
+                <p style="color:var(--muted);margin:6px 0">📞 ${u.phone}</p>
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:12px;border-radius:10px;margin:14px 0">
+                  <div style="font-size:13px;color:#166534">🎁 আপনার লয়্যালটি পয়েন্ট</div>
+                  <div style="font-size:26px;font-weight:800;color:#15803d">${u.loyalty_points || 0} পয়েন্ট</div>
+                </div>
+                <form id="prof-form">
+                  <div class="form-group"><label>নাম</label><input id="pf-name" class="form-control" value="${u.name}"></div>
+                  <div class="form-group"><label>সেভড ঠিকানা</label><textarea id="pf-addr" class="form-control" rows="2">${u.address || ''}</textarea></div>
+                  <button class="btn btn-primary btn-sm" type="submit">প্রোফাইল আপডেট</button>
+                </form>
+              </div>
+              <div class="card">
+                <h3 style="margin-bottom:12px">📦 অর্ডার হিস্ট্রি (${res.orders.length})</h3>
+                ${res.orders.length ? res.orders.map(o => `
+                  <div style="border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:10px;font-size:13.5px">
+                    <div style="display:flex;justify-content:space-between">
+                      <strong>#${o.order_number}</strong>
+                      <span style="color:var(--primary);font-weight:700">${o.status.toUpperCase()}</span>
+                    </div>
+                    <div>${o.items.map(i=>i.name+' ×'+i.qty).join(', ')}</div>
+                    <div style="display:flex;justify-content:space-between;margin-top:6px">
+                      <strong>${EShop.money(o.total_amount)}</strong>
+                      <a href="/track.html?q=${o.order_number}" style="color:var(--primary)">ট্র্যাক করুন →</a>
+                    </div>
+                  </div>`).join('') : '<p style="color:var(--muted)">আপনার কোনো অর্ডার নেই।</p>'}
+              </div>
+            </div>`;
+          document.getElementById('prof-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const r = await EShop.api('/account/me', { method: 'PUT', body: JSON.stringify({ name: document.getElementById('pf-name').value, address: document.getElementById('pf-addr').value }) });
+            EShop.toast(r.message || r.error);
+          });
+          return;
+        }
+        localStorage.removeItem('eshopbd_user_token');
+      }
+
+      root.innerHTML = `
+        <div class="pdp-grid">
+          <form id="login-f" class="card">
+            <h2 style="margin-bottom:14px">🔐 লগইন করুন</h2>
+            <div class="form-group"><label>মোবাইল নম্বর</label><input id="lg-phone" class="form-control" placeholder="01XXXXXXXXX" required></div>
+            <div class="form-group"><label>পাসওয়ার্ড</label><input id="lg-pass" type="password" class="form-control" required></div>
+            <button class="btn btn-primary btn-block">লগইন</button>
+          </form>
+          <form id="reg-f" class="card">
+            <h2 style="margin-bottom:14px">✨ নতুন অ্যাকাউন্ট (+৫০ বোনাস পয়েন্ট!)</h2>
+            <div class="form-group"><label>আপনার নাম</label><input id="rg-name" class="form-control" required></div>
+            <div class="form-group"><label>মোবাইল নম্বর (১১ ডিজিট)</label><input id="rg-phone" class="form-control" placeholder="01XXXXXXXXX" required></div>
+            <div class="form-group"><label>পাসওয়ার্ড</label><input id="rg-pass" type="password" class="form-control" minlength="4" required></div>
+            <button class="btn btn-dark btn-block">অ্যাকাউন্ট তৈরি করুন</button>
+          </form>
+        </div>`;
+
+      document.getElementById('login-f').addEventListener('submit', async e => {
+        e.preventDefault();
+        const r = await EShop.api('/auth/login', { method: 'POST', body: JSON.stringify({ phone: document.getElementById('lg-phone').value, password: document.getElementById('lg-pass').value }) });
+        if (r.ok) { localStorage.setItem('eshopbd_user_token', r.token); location.reload(); } else EShop.toast(r.error);
+      });
+      document.getElementById('reg-f').addEventListener('submit', async e => {
+        e.preventDefault();
+        const r = await EShop.api('/auth/register', { method: 'POST', body: JSON.stringify({ name: document.getElementById('rg-name').value, phone: document.getElementById('rg-phone').value, password: document.getElementById('rg-pass').value }) });
+        if (r.ok) { localStorage.setItem('eshopbd_user_token', r.token); EShop.toast('অ্যাকাউন্ট তৈরি হয়েছে!'); location.reload(); } else EShop.toast(r.error);
+      });
+    }
+    renderAccount();
+  </script>
+</body>
+</html>

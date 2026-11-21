@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-ShopBD Admin & API Control Center</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <div id="admin-root"></div>
+  <div id="modal-bg" class="modal-bg" onclick="if(event.target===this) closeAdminModal()">
+    <div class="modal-card">
+      <div class="panel-head"><h3 id="modal-title"></h3><button class="btn btn-outline btn-sm" onclick="closeAdminModal()">✕</button></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  <div id="admin-toast" class="toast"></div>
+  <script src="/admin.js"></script>
+</body>
+</html>

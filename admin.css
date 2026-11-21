@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #f1f5f9;
+  --sidebar: #0f172a;
+  --sidebar-hover: #1e293b;
+  --card: #ffffff;
+  --primary: #e11d48;
+  --blue: #2563eb;
+  --green: #16a34a;
+  --amber: #d97706;
+  --danger: #dc2626;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hind Siliguri', 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+button, input, select, textarea { font-family: inherit; }
+
+/* Login / Setup Box */
+.auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: linear-gradient(135deg, #0f172a, #1e293b); }
+.auth-card { background: #fff; border-radius: 16px; padding: 28px; width: min(440px, 100%); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+
+/* App Shell */
+.admin-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 245px; background: var(--sidebar); color: #cbd5e1;
+  display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
+  transition: transform .25s ease; overflow-y: auto;
+}
+.sidebar-brand { padding: 18px 16px; color: #fff; font-size: 19px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+.nav-group { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; font-weight: 700; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin: 2px 8px;
+  border-radius: 9px; cursor: pointer; color: #cbd5e1; border: none; background: transparent;
+  width: calc(100% - 16px); text-align: left; font-size: 13.5px; font-weight: 600;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--primary); color: #fff; }
+.nav-badge { margin-left: auto; background: #ef4444; color: #fff; font-size: 11px; padding: 1px 7px; border-radius: 99px; }
+
+.main-area { margin-left: 245px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  background: #fff; border-bottom: 1px solid var(--border); padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 50;
+}
+.menu-toggle { display: none; border: 1px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 18px; }
+.content { padding: 20px; max-width: 1320px; width: 100%; }
+
+/* Cards & KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.kpi-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.kpi-label { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.kpi-val { font-size: 24px; font-weight: 800; margin-top: 4px; }
+.kpi-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+th { background: #f8fafc; font-weight: 700; color: #334155; white-space: nowrap; }
+tr:hover td { background: #f8fafc; }
+
+/* Badges */
+.badge { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 700; }
+.b-pending { background: #fef3c7; color: #92400e; }
+.b-confirmed { background: #dbeafe; color: #1e40af; }
+.b-processing { background: #ede9fe; color: #5b21b6; }
+.b-shipped { background: #e0f2fe; color: #075985; }
+.b-delivered { background: #dcfce7; color: #166534; }
+.b-cancelled, .b-returned { background: #fee2e2; color: #991b1b; }
+
+/* Buttons & Forms */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 13px; border-radius: 8px; border: 1px solid transparent; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-sm { padding: 5px 9px; font-size: 12px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-dark { background: #0f172a; color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-outline { background: #fff; border-color: var(--border); color: var(--text); }
+.btn-block { width: 100%; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.fg { margin-bottom: 11px; }
+.fg label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
+.fc { width: 100%; padding: 8px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; outline: none; background: #fff; }
+.fc:focus { border-color: var(--primary); }
+
+/* Modal & Toast */
+.modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 14px; }
+.modal-bg.open { display: flex; }
+.modal-card { background: #fff; border-radius: 14px; width: min(760px, 100%); max-height: 90vh; overflow-y: auto; padding: 20px; }
+
+.code-box { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 9px; font-family: monospace; font-size: 12.5px; overflow-x: auto; word-break: break-all; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 10px; font-weight: 600; z-index: 300; opacity: 0; pointer-events: none; transition: .25s; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-area { margin-left: 0; }
+  .menu-toggle { display: inline-block; }
+}
