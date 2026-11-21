@@ -1794,11 +1794,10 @@ export default {
       return handleSitemap(env, url.origin);
     }
 
-    // 5. Pretty Admin URL Rewrite (/admin or /admin/ -> /admin.html)
-    if (pathname === '/admin' || pathname === '/admin/') {
-      const adminUrl = new URL('/admin.html', url.origin);
-      return env.ASSETS.fetch(new Request(adminUrl, request));
-    }
+    // 5. Pretty Admin URL Rewrite (/admin/ -> /admin)
+if (pathname === '/admin/') {
+  return Response.redirect(new URL('/admin', url.origin).toString(), 302);
+}
 
     // 6. Serve all static frontend files from root
     return env.ASSETS.fetch(request);
