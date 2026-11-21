@@ -405,7 +405,6 @@ window.EShop = (function () {
             <div class="top-bar-links">
               <a href="tel:${s.helpline_phone || ''}">📞 ${s.helpline_phone || '01700000000'}</a>
               <a href="/track.html">📦 ${t('track_order')}</a>
-              <a href="/admin/" style="opacity:.85">⚙️ Admin</a>
               <button class="lang-btn" onclick="EShop.toggleLang()">${state.lang === 'bn' ? 'EN' : 'বাংলা'}</button>
             </div>
           </div>
@@ -524,7 +523,7 @@ window.EShop = (function () {
                   <li><a href="/page.html?slug=about-us">আমাদের সম্পর্কে</a></li>
                   <li><a href="/page.html?slug=privacy-policy">প্রাইভেসি পলিসি</a></li>
                   <li><a href="/page.html?slug=terms">শর্তাবলী</a></li>
-                  <li><a href="/admin/">অ্যাডমিন প্যানেল</a></li>
+                  <li></li>
                 </ul>
               </div>
               <div>

@@ -1735,7 +1735,7 @@ ${urls.map(u => `  <url><loc>${u}</loc></url>`).join('\n')}
   return new Response(xml, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });
 }
 
-const BLOCKED_STATIC = new Set(['/_worker.js', '/wrangler.toml', '/schema.sql', '/README.md', '/APP_API_DOCS.md']);
+const BLOCKED_STATIC = new Set(['/_worker.js', '/wrangler.toml', '/schema.sql', '/README.md', '/APP_API_DOCS.md', '/.assetsignore', '/admin', '/admin/', '/admin.html']);
 
 export default {
   async fetch(request, env, ctx) {
@@ -1794,10 +1794,10 @@ export default {
       return handleSitemap(env, url.origin);
     }
 
-    // 5. Pretty Admin URL Rewrite (/admin/ -> /admin)
-if (pathname === '/admin/') {
-  return Response.redirect(new URL('/admin', url.origin).toString(), 302);
-}
+    // 5. Secret Admin Panel URL (/cp-eshop-983/ -> /cp-eshop-983)
+    if (pathname === '/cp-eshop-983/') {
+      return Response.redirect(new URL('/cp-eshop-983', url.origin).toString(), 302);
+    }
 
     // 6. Serve all static frontend files from root
     return env.ASSETS.fetch(request);
