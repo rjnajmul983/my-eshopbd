@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>তথ্য — E-ShopBD</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="site-header-mount"></div>
+  <main class="container" style="max-width:840px;margin-top:24px">
+    <div id="cms-page" class="card" style="line-height:1.8">লোড হচ্ছে...</div>
+  </main>
+  <div id="site-footer-mount"></div>
+  <script src="/api.js"></script>
+  <script>
+    (async () => {
+      await EShop.mountLayout();
+      const slug = new URLSearchParams(location.search).get('slug') || 'about-us';
+      const r = await EShop.api('/pages/' + encodeURIComponent(slug));
+      const box = document.getElementById('cms-page');
+      if (r.ok) {
+        document.title = r.page.title_bn || r.page.title;
+        box.innerHTML = `<h1 style="margin-bottom:14px">${r.page.title_bn || r.page.title}</h1><div>${r.page.content}</div>`;
+      } else box.innerHTML = 'পেজটি পাওয়া যায়নি।';
+    })();
+  </script>
+</body>
+</html>
