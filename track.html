@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অর্ডার ট্র্যাকিং — E-ShopBD</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="site-header-mount"></div>
+  <main class="container" style="max-width:780px;margin-top:24px">
+    <div class="card">
+      <h1 style="font-size:22px;margin-bottom:8px">📦 আপনার অর্ডার ট্র্যাক করুন</h1>
+      <p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">অর্ডার আইডি (যেমন: ES123456) অথবা আপনার ১১ ডিজিটের মোবাইল নম্বর দিন।</p>
+      <form id="track-form" style="display:flex;gap:8px">
+        <input id="track-q" class="form-control" placeholder="অর্ডার নম্বর বা মোবাইল নম্বর লিখুন..." required>
+        <button class="btn btn-primary" type="submit">ট্র্যাক করুন</button>
+      </form>
+    </div>
+    <div id="track-results" style="margin-top:18px;display:grid;gap:14px"></div>
+  </main>
+  <div id="site-footer-mount"></div>
+  <script src="/api.js"></script>
+  <script>
+    const STEPS = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
+    const LABELS = { pending: 'পেন্ডিং', confirmed: 'কনফার্মড', processing: 'প্যাকিং', shipped: 'কুরিয়ারে', delivered: 'ডেলিভারড', cancelled: 'ক্যান্সেল্ড', returned: 'রিটার্নড' };
+
+    async function searchTrack(q) {
+      if (!q) return;
+      const box = document.getElementById('track-results');
+      box.innerHTML = '<div class="card">খোঁজা হচ্ছে...</div>';
+      const res = await EShop.api('/orders/track?q=' + encodeURIComponent(q));
+      if (!res.ok || !res.orders.length) {
+        box.innerHTML = '<div class="card" style="text-align:center;color:var(--muted)">কোনো অর্ডার পাওয়া যায়নি। নম্বরটি আবার যাচাই করুন।</div>';
+        return;
+      }
+      box.innerHTML = res.orders.map(o => {
+        const idx = STEPS.indexOf(o.status);
+        return `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--border);padding-bottom:10px">
+              <div><strong style="font-size:17px;color:var(--primary)">#${o.order_number}</strong> <span style="font-size:12.5px;color:var(--muted)">(${o.created_at})</span></div>
+              <span class="p-badge" style="position:static;font-size:12.5px">${LABELS[o.status] || o.status}</span>
+            </div>
+            ${idx >= 0 ? `
+              <div class="timeline">
+                ${STEPS.map((st, i) => `<div class="t-step ${i < idx ? 'done' : (i === idx ? 'current' : '')}"><div class="t-dot">${i <= idx ? '✓' : i+1}</div>${LABELS[st]}</div>`).join('')}
+              </div>` : `<div style="padding:12px;background:#fef2f2;color:var(--danger);border-radius:8px;margin:12px 0;font-weight:700">অর্ডার স্ট্যাটাস: ${LABELS[o.status] || o.status}</div>`}
+            ${o.courier_consignment_id ? `<div style="background:#f0fdf4;padding:10px;border-radius:8px;font-size:13.5px;margin-bottom:10px">🚚 কুরিয়ার: <strong>${o.courier_name}</strong> | কনসাইনমেন্ট/ট্র্যাকিং কোড: <strong>${o.courier_tracking_code || o.courier_consignment_id}</strong></div>` : ''}
+            <div style="font-size:13.5px">
+              <div><strong>গ্রাহক:</strong> ${o.customer_name} (${o.customer_phone})</div>
+              <div><strong>ঠিকানা:</strong> ${o.customer_address}</div>
+              <div style="margin-top:8px"><strong>পণ্যসমূহ:</strong> ${o.items.map(i => `${i.name} ×${i.qty}`).join(', ')}</div>
+              <div style="margin-top:6px;font-weight:800">মোট বিল: ${EShop.money(o.total_amount)} (${o.payment_method.toUpperCase()})</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    (async () => {
+      await EShop.mountLayout();
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) { document.getElementById('track-q').value = q; searchTrack(q); }
+      document.getElementById('track-form').addEventListener('submit', e => { e.preventDefault(); searchTrack(document.getElementById('track-q').value.trim()); });
+    })();
+  </script>
+</body>
+</html>
