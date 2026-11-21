@@ -1742,6 +1742,19 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
+    // 0. Allow Android App with valid X-API-Key to open secret control panel
+    if (pathname === '/admin' || pathname === '/admin/') {
+      const appKey = request.headers.get('X-API-Key');
+      if (appKey && env.DB) {
+        const keyHash = await sha256Hex(appKey.trim());
+        const valid = await env.DB.prepare('SELECT id FROM api_keys WHERE key_hash = ? AND is_active = 1').bind(keyHash).first();
+        if (valid) {
+          return Response.redirect(new URL('/cp-eshop-983', url.origin).toString(), 302);
+        }
+      }
+    }
+
+
     // 1. Block direct download of backend / config / doc files stored in root
     if (BLOCKED_STATIC.has(pathname) || pathname.endsWith('.sql') || pathname.endsWith('.toml')) {
       return new Response('Not Found', { status: 404 });
